@@ -45,6 +45,9 @@
 
 
 - (void)dealloc {
+	[_label release];
+	[_textField release];
+	
     [super dealloc];
 }
 

@@ -39,6 +39,9 @@
 
 
 - (void)dealloc {
+	[_label release];
+	[_toggle release];
+	
     [super dealloc];
 }
 

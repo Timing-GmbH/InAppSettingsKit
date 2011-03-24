@@ -219,7 +219,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
     [_viewList release];
     [_currentIndexPath release];
 	[_file release];
@@ -231,7 +231,11 @@ CGRect IASKCGRectSwap(CGRect rect);
     [_settingsReader release];
     [_settingsStore release];
 	_delegate = nil;
+	
+	[_topmostRowBeforeKeyboardWasShown release];
 
+	[_tableView release];
+	
     [super dealloc];
 }
 
@@ -747,6 +751,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
 	self.currentFirstResponder = textField;
+	[_topmostRowBeforeKeyboardWasShown release];
 	if ([_tableView indexPathsForVisibleRows].count) {
 		_topmostRowBeforeKeyboardWasShown = (NSIndexPath*)[[_tableView indexPathsForVisibleRows] objectAtIndex:0];
 	} else {

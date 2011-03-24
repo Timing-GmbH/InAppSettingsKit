@@ -103,6 +103,10 @@
 	[_settingsReader release];
     [_settingsStore release];
 	
+	[_checkedItem release];
+	
+	[_tableView release];
+	
     [super dealloc];
 }
 

@@ -60,6 +60,10 @@
 }	
 
 - (void)dealloc {
+	[_slider release];
+	[_minImage release];
+	[_maxImage release];
+	
     [super dealloc];
 }
 
