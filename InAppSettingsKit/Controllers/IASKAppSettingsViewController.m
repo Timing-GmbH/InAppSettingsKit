@@ -135,7 +135,6 @@ CGRect IASKCGRectSwap(CGRect rect);
     }
 	
 	self.navigationItem.rightBarButtonItem = nil;
-    self.navigationController.delegate = self;
     if (_showDoneButton) {
         UIBarButtonItem *buttonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone 
                                                                                     target:self 
@@ -198,6 +197,8 @@ CGRect IASKCGRectSwap(CGRect rect);
 	[dc removeObserver:self name:UIApplicationWillTerminateNotification object:nil];
 	[dc removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 
+	[self dismiss:nil];
+	
 	[super viewDidDisappear:animated];
 }
 
@@ -210,12 +211,6 @@ CGRect IASKCGRectSwap(CGRect rect);
     [super didReceiveMemoryWarning];
 	
 	// Release any cached data, images, etc that aren't in use.
-}
-
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	if (![viewController isKindOfClass:[IASKAppSettingsViewController class]] && ![viewController isKindOfClass:[IASKSpecifierValuesViewController class]]) {
-		[self dismiss:nil];
-	}
 }
 
 - (void)dealloc {
@@ -249,7 +244,6 @@ CGRect IASKCGRectSwap(CGRect rect);
 	}
 	
 	[self.settingsStore synchronize];
-	self.navigationController.delegate = nil;
 	
 	if (self.delegate && [self.delegate conformsToProtocol:@protocol(IASKSettingsDelegate)]) {
 		[self.delegate settingsViewControllerDidEnd:self];
@@ -615,7 +609,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 			if ([vc respondsToSelector:@selector(setSettingsStore:)]) {
 				[vc performSelector:@selector(setSettingsStore:) withObject:self.settingsStore];
 			}
-			self.navigationController.delegate = nil;
+			
             [self.navigationController pushViewController:vc animated:YES];
             [vc release];
             return;
