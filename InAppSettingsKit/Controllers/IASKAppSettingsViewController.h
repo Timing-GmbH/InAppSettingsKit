@@ -64,6 +64,8 @@
 @property (nonatomic, assign) BOOL showCreditsFooter;
 @property (nonatomic, assign) BOOL showDoneButton;
 
+@property (nonatomic, retain, readonly) UITableView *tableView;
+
 - (void)synchronizeSettings;
 - (IBAction)dismiss:(id)sender;
 

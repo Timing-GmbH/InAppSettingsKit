@@ -91,6 +91,11 @@ CGRect IASKCGRectSwap(CGRect rect);
 	self.settingsReader = nil; // automatically initializes itself
 }
 
+- (UITableView *)tableView
+{
+	return _tableView;
+}
+
 #pragma mark standard view controller methods
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if ([super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
