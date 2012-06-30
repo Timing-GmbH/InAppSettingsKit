@@ -37,13 +37,4 @@
     // Configure the view for the selected state
 }
 
-
-- (void)dealloc {
-	[_label release];
-	[_toggle release];
-	
-    [super dealloc];
-}
-
-
 @end

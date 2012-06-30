@@ -80,12 +80,11 @@ CGRect IASKCGRectSwap(CGRect rect);
 	if (!_file) {
 		return @"Root";
 	}
-	return [[_file retain] autorelease];
+	return _file;
 }
 
 - (void)setFile:(NSString *)file {
 	if (file != _file) {
-		[_file release];
 		_file = [file copy];
 	}
 	
@@ -146,7 +145,6 @@ CGRect IASKCGRectSwap(CGRect rect);
                                                                                     target:self 
                                                                                     action:@selector(dismiss:)];
         self.navigationItem.rightBarButtonItem = buttonItem;
-        [buttonItem release];
     } 
     if (!self.title) {
         self.title = NSLocalizedString(@"Settings", @"");
@@ -223,23 +221,6 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-    [_viewList release];
-    [_currentIndexPath release];
-	[_file release];
-	_file = nil;
-	
-	[_currentFirstResponder release];
-	_currentFirstResponder = nil;
-	
-    [_settingsReader release];
-    [_settingsStore release];
-	_delegate = nil;
-	
-	[_topmostRowBeforeKeyboardWasShown release];
-
-	[_tableView release];
-	
-    [super dealloc];
 }
 
 
@@ -410,7 +391,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[specifier type]];
         
         if (!cell) {
-            cell = [[[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]] autorelease];
+            cell = [[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]];
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
         [[cell textLabel] setText:[specifier title]];
@@ -422,7 +403,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[specifier type]];
         
         if (!cell) {
-            cell = [[[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]] autorelease];
+            cell = [[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]];
 			cell.accessoryType = UITableViewCellAccessoryNone;
         }
 		
@@ -502,7 +483,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[specifier type]];
         
         if (!cell) {
-            cell = [[[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]] autorelease];
+            cell = [[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]];
 			[cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         }
 
@@ -512,7 +493,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[specifier type]];
         
         if (!cell) {
-            cell = [[[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]] autorelease];
+            cell = [[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]];
 			[cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         }
 
@@ -523,7 +504,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[specifier type]];
 		
         if (!cell) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:[specifier type]] autorelease];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:[specifier type]];
         }
         cell.textLabel.text = [specifier title];
         cell.textLabel.textAlignment = UITextAlignmentCenter;
@@ -532,7 +513,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[specifier type]];
         
         if (!cell) {
-            cell = [[[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]] autorelease];
+            cell = [[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]];
 			[cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         }
         
@@ -546,7 +527,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[specifier type]];
 		
         if (!cell) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:[specifier type]] autorelease];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:[specifier type]];
         }
         [[cell textLabel] setText:[specifier title]];
         return cell;
@@ -582,7 +563,6 @@ CGRect IASKCGRectSwap(CGRect rect);
             // add the new view controller to the dictionary and then to the 'viewList' array
             [newItemDict setObject:targetViewController forKey:@"viewController"];
             [_viewList replaceObjectAtIndex:kIASKSpecifierValuesViewControllerIndex withObject:newItemDict];
-            [targetViewController release];
             
             // load the view controll back in to push it
             targetViewController = [[_viewList objectAtIndex:kIASKSpecifierValuesViewControllerIndex] objectForKey:@"viewController"];
@@ -619,7 +599,6 @@ CGRect IASKCGRectSwap(CGRect rect);
 			}
 			
             [self.navigationController pushViewController:vc animated:YES];
-            [vc release];
             return;
         }
         
@@ -644,7 +623,6 @@ CGRect IASKCGRectSwap(CGRect rect);
             // add the new view controller to the dictionary and then to the 'viewList' array
             [newItemDict setObject:targetViewController forKey:@"viewController"];
             [_viewList replaceObjectAtIndex:kIASKSpecifierChildViewControllerIndex withObject:newItemDict];
-            [targetViewController release];
             
             // load the view controll back in to push it
             targetViewController = [[_viewList objectAtIndex:kIASKSpecifierChildViewControllerIndex] objectForKey:@"viewController"];
@@ -707,7 +685,6 @@ CGRect IASKCGRectSwap(CGRect rect);
             
             mailViewController.mailComposeDelegate = vc;
             [vc presentModalViewController:mailViewController animated:YES];
-            [mailViewController release];
         } else {
             UIAlertView *alert = [[UIAlertView alloc]
                                   initWithTitle:NSLocalizedString(@"Mail not configured", @"InAppSettingsKit")
@@ -716,7 +693,6 @@ CGRect IASKCGRectSwap(CGRect rect);
                                   cancelButtonTitle:NSLocalizedString(@"OK", @"InAppSettingsKit")
                                   otherButtonTitles:nil];
             [alert show];
-            [alert release];
         }
 
 	} else {
@@ -753,7 +729,6 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
 	self.currentFirstResponder = textField;
-	[_topmostRowBeforeKeyboardWasShown release];
 	if ([_tableView indexPathsForVisibleRows].count) {
 		_topmostRowBeforeKeyboardWasShown = (NSIndexPath*)[[_tableView indexPathsForVisibleRows] objectAtIndex:0];
 	} else {

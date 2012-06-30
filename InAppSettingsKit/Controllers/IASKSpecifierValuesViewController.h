@@ -29,11 +29,11 @@
     id<IASKSettingsStore>  _settingsStore;
 }
 
-@property (nonatomic, retain) NSIndexPath *checkedItem;
-@property (nonatomic, retain) IASKSpecifier *currentSpecifier;
-@property (nonatomic, retain) IASKSettingsReader *settingsReader;
-@property (nonatomic, retain) id<IASKSettingsStore> settingsStore;
+@property (nonatomic, strong) NSIndexPath *checkedItem;
+@property (nonatomic, strong) IASKSpecifier *currentSpecifier;
+@property (nonatomic, strong) IASKSettingsReader *settingsReader;
+@property (nonatomic, strong) id<IASKSettingsStore> settingsStore;
 
-@property (nonatomic, retain, readonly) UITableView *tableView;
+@property (nonatomic, strong, readonly) UITableView *tableView;
 
 @end

@@ -59,14 +59,6 @@
     _slider.center = sliderCenter;
 }	
 
-- (void)dealloc {
-	[_slider release];
-	[_minImage release];
-	[_maxImage release];
-	
-    [super dealloc];
-}
-
 - (void)prepareForReuse {
 	_minImage.image = nil;
 	_maxImage.image = nil;

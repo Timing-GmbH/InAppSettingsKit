@@ -19,11 +19,11 @@
 @class IASKTextField;
 
 @interface IASKPSTextFieldSpecifierViewCell : UITableViewCell {
-    IBOutlet UILabel        *_label;
-    IBOutlet IASKTextField    *_textField;
+    IBOutlet UILabel        * _label;
+    IBOutlet IASKTextField    * _textField;
 }
 
-@property (nonatomic, readonly) UILabel        *label;
-@property (nonatomic, readonly) IASKTextField    *textField;
+@property (nonatomic, strong, readonly) UILabel        *label;
+@property (nonatomic, strong, readonly) IASKTextField    *textField;
 
 @end

@@ -21,9 +21,4 @@
 
 @synthesize key=_key;
 
-- (void)dealloc {
-    [_key release];
-    [super dealloc];
-}
-
 @end

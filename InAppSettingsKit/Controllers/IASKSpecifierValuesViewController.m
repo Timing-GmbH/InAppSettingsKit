@@ -102,20 +102,6 @@
 	// e.g. self.myOutlet = nil;
 }
 
-
-- (void)dealloc {
-    [_currentSpecifier release];
-	[_settingsReader release];
-    [_settingsStore release];
-	
-	[_checkedItem release];
-	
-	[_tableView release];
-	
-    [super dealloc];
-}
-
-
 #pragma mark -
 #pragma mark UITableView delegates
 
@@ -146,7 +132,7 @@
     NSArray *titles         = [_currentSpecifier multipleTitles];
 	
     if (!cell) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCellValue] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCellValue];
     }
 	
 	if ([indexPath isEqual:[self checkedItem]]) {

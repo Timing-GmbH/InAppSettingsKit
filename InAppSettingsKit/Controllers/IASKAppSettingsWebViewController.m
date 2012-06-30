@@ -6,9 +6,9 @@
 //  Luc Vandal, Edovia Inc., http://www.edovia.com
 //  Ortwin Gentz, FutureTap GmbH, http://www.futuretap.com
 //  All rights reserved.
-// 
-//  It is appreciated but not required that you give credit to Luc Vandal and Ortwin Gentz, 
-//  as the original authors of this code. You can give credit in a blog post, a tweet or on 
+//
+//  It is appreciated but not required that you give credit to Luc Vandal and Ortwin Gentz,
+//  as the original authors of this code. You can give credit in a blog post, a tweet or on
 //  a info page of your app. Also, the original authors appreciate letting them know if you use this code.
 //
 //  This code is licensed under the BSD license that is available at: http://www.opensource.org/licenses/bsd-license.php
@@ -37,15 +37,7 @@
 	return self;
 }
 
-
-- (void)dealloc {
-	[webView release], webView = nil;
-	[url release], url = nil;
-	
-	[super dealloc];
-}
-
-- (void)viewWillAppear:(BOOL)animated {  
+- (void)viewWillAppear:(BOOL)animated {
 	[webView loadRequest:[NSURLRequest requestWithURL:self.url]];
 }
 
@@ -63,7 +55,7 @@
 	
 	// intercept mailto URL and send it to an in-app Mail compose view instead
 	if ([[newURL scheme] isEqualToString:@"mailto"]) {
-
+		
 		NSArray *rawURLparts = [[newURL resourceSpecifier] componentsSeparatedByString:@"?"];
 		if (rawURLparts.count > 2) {
 			return NO; // invalid URL
@@ -71,7 +63,7 @@
 		
 		MFMailComposeViewController *mailViewController = [[MFMailComposeViewController alloc] init];
 		mailViewController.mailComposeDelegate = self;
-
+		
 		NSMutableArray *toRecipients = [NSMutableArray array];
 		NSString *defaultRecipient = [rawURLparts objectAtIndex:0];
 		if (defaultRecipient.length) {
@@ -90,11 +82,10 @@
 				NSString *key = [[keyValue objectAtIndex:0] lowercaseString];
 				NSString *value = [keyValue objectAtIndex:1];
 				
-				value =  (NSString *)CFURLCreateStringByReplacingPercentEscapesUsingEncoding(kCFAllocatorDefault,
-																							 (CFStringRef)value,
-																							 CFSTR(""),
-																							 kCFStringEncodingUTF8);
-				[value autorelease];
+				value =  (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(kCFAllocatorDefault,
+																											   (CFStringRef)value,
+																											   CFSTR(""),
+																											   kCFStringEncodingUTF8));
 				
 				if ([key isEqualToString:@"subject"]) {
 					[mailViewController setSubject:value];
@@ -121,9 +112,8 @@
 		}
 		
 		[mailViewController setToRecipients:toRecipients];
-
+		
 		[self presentModalViewController:mailViewController animated:YES];
-		[mailViewController release];
 		return NO;
 	}
 	

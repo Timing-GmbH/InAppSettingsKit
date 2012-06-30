@@ -44,7 +44,7 @@ dataSource=_dataSource;
         self.path = [self locateSettingsFile: file];
         [self setSettingsBundle:[NSDictionary dictionaryWithContentsOfFile:self.path]];
         self.bundlePath = [self.path stringByDeletingLastPathComponent];
-        _bundle = [[NSBundle bundleWithPath:[self bundlePath]] retain];
+        _bundle = [NSBundle bundleWithPath:[self bundlePath]];
         
 		// Look for localization file
 		self.localizationTable = [[[[self.path stringByDeletingPathExtension] // removes '.plist'
@@ -63,20 +63,10 @@ dataSource=_dataSource;
     return self;
 }
 
-- (void)dealloc {
-    [_path release];
-	[_localizationTable release];
-	[_bundlePath release];
-    [_settingsBundle release];
-    [_dataSource release];
-    [_bundle release];
-    [super dealloc];
-}
-
 - (void)_reinterpretBundle:(NSDictionary*)settingsBundle {
     NSArray *preferenceSpecifiers   = [settingsBundle objectForKey:kIASKPreferenceSpecifiers];
     NSInteger sectionCount          = -1;
-    NSMutableArray *dataSource      = [[[NSMutableArray alloc] init] autorelease];
+    NSMutableArray *dataSource      = [[NSMutableArray alloc] init];
     
     for (NSDictionary *specifier in preferenceSpecifiers) {
         if ([(NSString*)[specifier objectForKey:kIASKType] isEqualToString:kIASKPSGroupSpecifier]) {
@@ -84,20 +74,17 @@ dataSource=_dataSource;
             
             [newArray addObject:specifier];
             [dataSource addObject:newArray];
-            [newArray release];
             sectionCount++;
         }
         else {
             if (sectionCount == -1) {
                 NSMutableArray *newArray = [[NSMutableArray alloc] init];
 				[dataSource addObject:newArray];
-				[newArray release];
 				sectionCount++;
 			}
 
             IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:specifier];
             [(NSMutableArray*)[dataSource objectAtIndex:sectionCount] addObject:newSpecifier];
-            [newSpecifier release];
         }
     }
     [self setDataSource:dataSource];

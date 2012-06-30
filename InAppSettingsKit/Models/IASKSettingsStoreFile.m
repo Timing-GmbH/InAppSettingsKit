@@ -22,7 +22,7 @@
 
 - (id)initWithPath:(NSString*)path {
     if([super init]) {
-        _filePath = [path retain];
+        _filePath = path;
         _dict = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
         if(_dict == nil) {
             _dict = [[NSMutableDictionary alloc] init];
@@ -30,13 +30,6 @@
     }
     return self;
 }
-
-- (void)dealloc {
-    [_dict release];
-    [_filePath release];
-    [super dealloc];
-}
-
 
 - (void)setObject:(id)value forKey:(NSString *)key {
     [_dict setObject:value forKey:key];
