@@ -590,7 +590,10 @@ CGRect IASKCGRectSwap(CGRect rect);
                 initSelector = @selector(init);
             }
             UIViewController * vc = [vcClass alloc];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
             [vc performSelector:initSelector withObject:[specifier file] withObject:[specifier key]];
+#pragma clang diagnostic pop
 			if ([vc respondsToSelector:@selector(setDelegate:)]) {
 				[vc performSelector:@selector(setDelegate:) withObject:self.delegate];
 			}
@@ -640,7 +643,10 @@ CGRect IASKCGRectSwap(CGRect rect);
 		Class buttonClass = [specifier buttonClass];
 		SEL buttonAction = [specifier buttonAction];
 		if ([buttonClass respondsToSelector:buttonAction]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 			[buttonClass performSelector:buttonAction withObject:self withObject:[specifier key]];
+#pragma clang diagnostic pop
 		}
     } else if ([[specifier type] isEqualToString:kIASKMailComposeSpecifier]) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
