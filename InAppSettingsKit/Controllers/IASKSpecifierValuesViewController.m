@@ -51,6 +51,11 @@
     return _settingsStore;
 }
 
+- (UITableView *)tableView
+{
+	return _tableView;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     if (_currentSpecifier) {
         [self setTitle:[_currentSpecifier title]];

@@ -1,3 +1,4 @@
+
 //
 //  IASKAppSettingsViewController.m
 //  http://www.inappsettingskit.com
@@ -201,8 +202,10 @@ CGRect IASKCGRectSwap(CGRect rect);
 	IASK_IF_IOS4_OR_GREATER([dc removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];);
 	[dc removeObserver:self name:UIApplicationWillTerminateNotification object:nil];
 	[dc removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-
-	[self dismiss:nil];
+	
+	if (!self.navigationController && self.delegate && [self.delegate conformsToProtocol:@protocol(IASKSettingsDelegate)]) {
+		[self.delegate settingsViewControllerDidEnd:self];
+	}
 	
 	[super viewDidDisappear:animated];
 }
