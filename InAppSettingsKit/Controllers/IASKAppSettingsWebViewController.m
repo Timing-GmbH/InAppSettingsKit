@@ -83,7 +83,7 @@
 				NSString *value = [keyValue objectAtIndex:1];
 				
 				value =  (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(kCFAllocatorDefault,
-																											   (CFStringRef)value,
+																											   (__bridge CFStringRef)value,
 																											   CFSTR(""),
 																											   kCFStringEncodingUTF8));
 				
