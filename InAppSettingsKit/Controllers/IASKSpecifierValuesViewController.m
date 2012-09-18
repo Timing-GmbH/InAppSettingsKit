@@ -19,6 +19,8 @@
 #import "IASKSettingsReader.h"
 #import "IASKSettingsStoreUserDefaults.h"
 
+#import "PCAppDelegate.h"
+
 #define kCellValue      @"kCellValue"
 
 @interface IASKSpecifierValuesViewController()
@@ -54,6 +56,15 @@
 - (UITableView *)tableView
 {
 	return _tableView;
+}
+
+- (void)viewDidLoad
+{
+	[super viewDidLoad];
+	
+	if (self.tableView.style == UITableViewStyleGrouped
+		&& hasIOS6OrLater())
+		self.tableView.contentInset = UIEdgeInsetsMake(0, 0, -20, 0);
 }
 
 - (void)viewWillAppear:(BOOL)animated {

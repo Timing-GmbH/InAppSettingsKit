@@ -29,6 +29,8 @@
 #import "IASKSpecifierValuesViewController.h"
 #import "IASKTextField.h"
 
+#import "PCAppDelegate.h"
+
 static const CGFloat KEYBOARD_ANIMATION_DURATION = 0.3;
 static const CGFloat MINIMUM_SCROLL_FRACTION = 0.2;
 static const CGFloat MAXIMUM_SCROLL_FRACTION = 0.8;
@@ -120,6 +122,10 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+	
+	if (self.tableView.style == UITableViewStyleGrouped
+		&& hasIOS6OrLater())
+		self.tableView.contentInset = UIEdgeInsetsMake(0, 0, -20, 0);
     
     // Add views
     _viewList = [[NSMutableArray alloc] init];
