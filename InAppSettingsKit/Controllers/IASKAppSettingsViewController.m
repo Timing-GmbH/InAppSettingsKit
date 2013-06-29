@@ -334,7 +334,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 	if ((title = [self tableView:tableView titleForHeaderInSection:section])) {
 		CGSize size = [title sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]] 
 						constrainedToSize:CGSizeMake(tableView.frame.size.width - 2*kIASKHorizontalPaddingGroupTitles, INFINITY)
-							lineBreakMode:UILineBreakModeWordWrap];
+							lineBreakMode:NSLineBreakByWordWrapping];
 		return size.height+kIASKVerticalPaddingGroupTitles;
 	}
 	return 0;
@@ -734,7 +734,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-	[textField setTextAlignment:UITextAlignmentLeft];
+	[textField setTextAlignment:NSTextAlignmentLeft];
 	self.currentFirstResponder = textField;
     return YES;
 }
