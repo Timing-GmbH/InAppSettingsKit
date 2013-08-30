@@ -371,6 +371,8 @@ CGRect IASKCGRectSwap(CGRect rect);
             cell = (IASKPSToggleSwitchSpecifierViewCell*) [[[NSBundle mainBundle] loadNibNamed:@"IASKPSToggleSwitchSpecifierViewCell" 
 																					   owner:self 
 																					 options:nil] objectAtIndex:0];
+			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1)
+				cell.label.font = [UIFont systemFontOfSize:17];
         }
         [[cell label] setText:[specifier title]];
 
