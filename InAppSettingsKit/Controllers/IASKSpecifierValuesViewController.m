@@ -63,7 +63,8 @@
 	[super viewDidLoad];
 	
 	if (self.tableView.style == UITableViewStyleGrouped
-		&& hasIOS6OrLater())
+		&& hasIOS6OrLater()
+		&& floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
 		self.tableView.contentInset = UIEdgeInsetsMake(0, 0, -20, 0);
 }
 
