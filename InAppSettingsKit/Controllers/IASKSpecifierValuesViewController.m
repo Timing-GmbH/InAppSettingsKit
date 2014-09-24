@@ -58,16 +58,6 @@
 	return _tableView;
 }
 
-- (void)viewDidLoad
-{
-	[super viewDidLoad];
-	
-	if (self.tableView.style == UITableViewStyleGrouped
-		&& hasIOS6OrLater()
-		&& floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
-		self.tableView.contentInset = UIEdgeInsetsMake(0, 0, -20, 0);
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     if (_currentSpecifier) {
         [self setTitle:[_currentSpecifier title]];
