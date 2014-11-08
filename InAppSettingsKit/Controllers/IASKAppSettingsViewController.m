@@ -159,7 +159,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 	[super viewWillAppear:animated];
 }
 
-- (CGSize)contentSizeForViewInPopover {
+- (CGSize)preferredContentSize {
     return [[self view] sizeThatFits:CGSizeMake(320, 2000)];
 }
 
