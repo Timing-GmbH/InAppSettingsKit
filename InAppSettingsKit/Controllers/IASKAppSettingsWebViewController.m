@@ -41,11 +41,6 @@
 	[webView loadRequest:[NSURLRequest requestWithURL:self.url]];
 }
 
-- (void)viewDidUnload {
-	[super viewDidUnload];
-	self.url = nil;
-}
-
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
 	self.navigationItem.title = [self.webView stringByEvaluatingJavaScriptFromString:@"document.title"];
 }

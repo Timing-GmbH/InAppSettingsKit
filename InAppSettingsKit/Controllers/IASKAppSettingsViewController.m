@@ -130,11 +130,6 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 }
 
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     if (_tableView) {
         [_tableView reloadData];
