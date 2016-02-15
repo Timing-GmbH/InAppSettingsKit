@@ -429,7 +429,7 @@ CGRect IASKCGRectSwap(CGRect rect);
                                                                                       owner:self 
                                                                                     options:nil] objectAtIndex:0];
 
-            cell.textField.textAlignment = UITextAlignmentLeft;
+            cell.textField.textAlignment = NSTextAlignmentLeft;
             cell.textField.returnKeyType = UIReturnKeyDone;
             cell.accessoryType = UITableViewCellAccessoryNone;
         }
@@ -506,7 +506,7 @@ CGRect IASKCGRectSwap(CGRect rect);
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:[specifier type]];
         }
         cell.textLabel.text = [specifier title];
-        cell.textLabel.textAlignment = UITextAlignmentCenter;
+        cell.textLabel.textAlignment = NSTextAlignmentCenter;
         return cell;
     } else if ([[specifier type] isEqualToString:kIASKMailComposeSpecifier]) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[specifier type]];
