@@ -30,6 +30,7 @@
 #import "IASKTextField.h"
 
 #import "PCAppDelegate.h"
+#import "ECUIKit.h"
 
 static NSString *kIASKCredits = @"Powered by InAppSettingsKit"; // Leave this as-is!!!
 
@@ -319,9 +320,9 @@ CGRect IASKCGRectSwap(CGRect rect);
 	}
 	NSString *title;
 	if ((title = [self tableView:tableView titleForHeaderInSection:section])) {
-		CGSize size = [title sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]] 
-						constrainedToSize:CGSizeMake(tableView.frame.size.width - 2*kIASKHorizontalPaddingGroupTitles, INFINITY)
-							lineBreakMode:NSLineBreakByWordWrapping];
+		CGSize size = [title ec_sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]]
+						   constrainedToSize:CGSizeMake(tableView.frame.size.width - 2*kIASKHorizontalPaddingGroupTitles, INFINITY)
+							   lineBreakMode:NSLineBreakByWordWrapping];
 		return ceilf(size.height)+kIASKVerticalPaddingGroupTitles;
 	}
 	return 0;
