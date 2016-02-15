@@ -32,7 +32,7 @@
     [[NSUserDefaults standardUserDefaults] setDouble:value forKey:key];
 }
 
-- (void)setInteger:(int)value forKey:(NSString*)key {
+- (void)setInteger:(NSInteger)value forKey:(NSString*)key {
     [[NSUserDefaults standardUserDefaults] setInteger:value forKey:key];
 }
 
@@ -52,7 +52,7 @@
     return [[NSUserDefaults standardUserDefaults] doubleForKey:key];
 }
 
-- (int)integerForKey:(NSString*)key {
+- (NSInteger)integerForKey:(NSString*)key {
     return [[NSUserDefaults standardUserDefaults] integerForKey:key];
 }
 

@@ -31,10 +31,6 @@
 
 #import "PCAppDelegate.h"
 
-static const CGFloat KEYBOARD_ANIMATION_DURATION = 0.3;
-static const CGFloat MINIMUM_SCROLL_FRACTION = 0.2;
-static const CGFloat MAXIMUM_SCROLL_FRACTION = 0.8;
-
 static NSString *kIASKCredits = @"Powered by InAppSettingsKit"; // Leave this as-is!!!
 
 #define kIASKSpecifierValuesViewControllerIndex       0
@@ -689,7 +685,7 @@ CGRect IASKCGRectSwap(CGRect rect);
             }
             
             mailViewController.mailComposeDelegate = vc;
-            [vc presentModalViewController:mailViewController animated:YES];
+            [vc presentViewController:mailViewController animated:YES completion:nil];
         } else {
             UIAlertView *alert = [[UIAlertView alloc]
                                   initWithTitle:NSLocalizedString(@"Mail not configured", @"InAppSettingsKit")
@@ -711,7 +707,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 -(void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error {
     // NOTE: No error handling is done here
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark -
