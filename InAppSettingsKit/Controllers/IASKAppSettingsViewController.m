@@ -156,10 +156,6 @@ CGRect IASKCGRectSwap(CGRect rect);
 	[super viewWillAppear:animated];
 }
 
-- (CGSize)preferredContentSize {
-    return [[self view] sizeThatFits:CGSizeMake(320, 2000)];
-}
-
 - (void)viewDidAppear:(BOOL)animated {
 	[_tableView flashScrollIndicators];
 //	_tableView.frame = self.view.bounds;
