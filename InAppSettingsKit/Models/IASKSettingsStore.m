@@ -31,19 +31,19 @@
 }
 
 - (void)setBool:(BOOL)value forKey:(NSString*)key {
-    [self setObject:[NSNumber numberWithBool:value] forKey:key];
+    [self setObject:@(value) forKey:key];
 }
 
 - (void)setFloat:(float)value forKey:(NSString*)key {
-    [self setObject:[NSNumber numberWithFloat:value] forKey:key];
+    [self setObject:@(value) forKey:key];
 }
 
 - (void)setInteger:(NSInteger)value forKey:(NSString*)key {
-    [self setObject:[NSNumber numberWithInteger:value] forKey:key];
+    [self setObject:@(value) forKey:key];
 }
 
 - (void)setDouble:(double)value forKey:(NSString*)key {
-    [self setObject:[NSNumber numberWithDouble:value] forKey:key];
+    [self setObject:@(value) forKey:key];
 }
 
 - (BOOL)boolForKey:(NSString*)key {

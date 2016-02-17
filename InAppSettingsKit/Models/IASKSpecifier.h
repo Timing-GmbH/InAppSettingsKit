@@ -27,7 +27,7 @@
 @property (nonatomic, strong) NSDictionary  *specifierDict;
 @property (nonatomic, weak) IASKSettingsReader *settingsReader;
 
-- (id)initWithSpecifier:(NSDictionary*)specifier;
+- (instancetype)initWithSpecifier:(NSDictionary*)specifier;
 - (NSString*)localizedObjectForKey:(NSString*)key;
 - (NSString*)title;
 - (NSString*)key;

@@ -43,7 +43,7 @@
     } else {
       index = [[_currentSpecifier multipleValues] indexOfObject:[_currentSpecifier defaultValue]];
     }
-	[self setCheckedItem:[NSIndexPath indexPathForRow:index inSection:0]];
+	self.checkedItem = [NSIndexPath indexPathForRow:index inSection:0];
 }
 
 - (id<IASKSettingsStore>)settingsStore {
@@ -60,7 +60,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     if (_currentSpecifier) {
-        [self setTitle:[_currentSpecifier title]];
+        self.title = [_currentSpecifier title];
         [self updateCheckedItem];
     }
     
@@ -68,7 +68,7 @@
         [_tableView reloadData];
 
 		// Make sure the currently checked item is visible
-        [_tableView scrollToRowAtIndexPath:[self checkedItem] atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
+        [_tableView scrollToRowAtIndexPath:self.checkedItem atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
     }
 	[super viewWillAppear:animated];
 }
@@ -103,13 +103,13 @@
 }
 
 - (void)selectCell:(UITableViewCell *)cell {
-	[cell setAccessoryType:UITableViewCellAccessoryCheckmark];
-	[[cell textLabel] setTextColor:kIASKgrayBlueColor];
+	cell.accessoryType = UITableViewCellAccessoryCheckmark;
+	[cell.textLabel setTextColor:kIASKgrayBlueColor];
 }
 
 - (void)deselectCell:(UITableViewCell *)cell {
-	[cell setAccessoryType:UITableViewCellAccessoryNone];
-	[[cell textLabel] setTextColor:[UIColor darkTextColor]];
+	cell.accessoryType = UITableViewCellAccessoryNone;
+	cell.textLabel.textColor = [UIColor darkTextColor];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
@@ -124,14 +124,14 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kCellValue];
     }
 	
-	if ([indexPath isEqual:[self checkedItem]]) {
+	if ([indexPath isEqual:self.checkedItem]) {
 		[self selectCell:cell];
     } else {
         [self deselectCell:cell];
     }
 	
 	@try {
-		[[cell textLabel] setText:[self.settingsReader titleForStringId:[titles objectAtIndex:indexPath.row]]];
+		cell.textLabel.text = [self.settingsReader titleForStringId:titles[indexPath.row]];
 	}
 	@catch (NSException * e) {}
     return cell;
@@ -139,7 +139,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-    if (indexPath == [self checkedItem]) {
+    if (indexPath == self.checkedItem) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
         return;
     }
@@ -147,16 +147,15 @@
     NSArray *values         = [_currentSpecifier multipleValues];
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [self deselectCell:[tableView cellForRowAtIndexPath:[self checkedItem]]];
+    [self deselectCell:[tableView cellForRowAtIndexPath:self.checkedItem]];
     [self selectCell:[tableView cellForRowAtIndexPath:indexPath]];
-    [self setCheckedItem:indexPath];
+    self.checkedItem = indexPath;
 	
-    [self.settingsStore setObject:[values objectAtIndex:indexPath.row] forKey:[_currentSpecifier key]];
+    [self.settingsStore setObject:values[indexPath.row] forKey:[_currentSpecifier key]];
 	[self.settingsStore synchronize];
     [[NSNotificationCenter defaultCenter] postNotificationName:kIASKAppSettingChanged
                                                         object:[_currentSpecifier key]
-                                                      userInfo:[NSDictionary dictionaryWithObject:[values objectAtIndex:indexPath.row]
-                                                                                           forKey:[_currentSpecifier key]]];
+                                                      userInfo:@{[_currentSpecifier key]: values[indexPath.row]}];
 }
 
 #pragma mark Notifications

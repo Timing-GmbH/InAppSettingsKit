@@ -116,7 +116,7 @@ __VA_ARGS__ \
     NSBundle        *_bundle;
 }
 
-- (id)initWithFile:(NSString*)file;
+- (instancetype)initWithFile:(NSString*)file NS_DESIGNATED_INITIALIZER;
 - (NSInteger)numberOfSections;
 - (NSInteger)numberOfRowsForSection:(NSInteger)section;
 - (IASKSpecifier*)specifierForIndexPath:(NSIndexPath*)indexPath;

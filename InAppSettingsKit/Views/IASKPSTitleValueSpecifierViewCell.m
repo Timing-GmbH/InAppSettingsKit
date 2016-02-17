@@ -32,7 +32,7 @@
 	}
 	[super layoutSubviews];
 	
-	CGSize viewSize =  [self.textLabel superview].frame.size;
+	CGSize viewSize =  self.textLabel.superview.frame.size;
 	
 	// set the left title label frame
 	CGFloat labelWidth = [self.textLabel sizeThatFits:CGSizeZero].width;

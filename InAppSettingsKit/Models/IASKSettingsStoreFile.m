@@ -20,7 +20,7 @@
 
 @implementation IASKSettingsStoreFile
 
-- (id)initWithPath:(NSString*)path {
+- (instancetype)initWithPath:(NSString*)path {
     if(self = [super init]) {
         _filePath = path;
         _dict = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
@@ -32,11 +32,11 @@
 }
 
 - (void)setObject:(id)value forKey:(NSString *)key {
-    [_dict setObject:value forKey:key];
+    _dict[key] = value;
 }
 
 - (id)objectForKey:(NSString *)key {
-    return [_dict objectForKey:key];
+    return _dict[key];
 }
 
 - (BOOL)synchronize {

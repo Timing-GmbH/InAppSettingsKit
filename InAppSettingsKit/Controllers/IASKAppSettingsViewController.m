@@ -96,7 +96,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 }
 
 #pragma mark standard view controller methods
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
         // If set to YES, will display credits for InAppSettingsKit creators
         _showCreditsFooter = YES;
@@ -122,8 +122,8 @@ CGRect IASKCGRectSwap(CGRect rect);
     
     // Add views
     _viewList = [[NSMutableArray alloc] init];
-    [_viewList addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"IASKSpecifierValuesView", @"ViewName",nil]];
-    [_viewList addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"IASKAppSettingsView", @"ViewName",nil]];
+    [_viewList addObject:@{@"ViewName": @"IASKSpecifierValuesView"}];
+    [_viewList addObject:@{@"ViewName": @"IASKAppSettingsView"}];
 
 }
 
@@ -231,37 +231,35 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)toggledValue:(id)sender {
     IASKSwitch *toggle    = (IASKSwitch*)sender;
-    IASKSpecifier *spec   = [_settingsReader specifierForKey:[toggle key]];
+    IASKSpecifier *spec   = [_settingsReader specifierForKey:toggle.key];
     
-    if ([toggle isOn]) {
+    if (toggle.on) {
         if ([spec trueValue] != nil) {
-            [self.settingsStore setObject:[spec trueValue] forKey:[toggle key]];
+            [self.settingsStore setObject:[spec trueValue] forKey:toggle.key];
         }
         else {
-            [self.settingsStore setBool:YES forKey:[toggle key]]; 
+            [self.settingsStore setBool:YES forKey:toggle.key]; 
         }
     }
     else {
         if ([spec falseValue] != nil) {
-            [self.settingsStore setObject:[spec falseValue] forKey:[toggle key]];
+            [self.settingsStore setObject:[spec falseValue] forKey:toggle.key];
         }
         else {
-            [self.settingsStore setBool:NO forKey:[toggle key]]; 
+            [self.settingsStore setBool:NO forKey:toggle.key]; 
         }
     }
     [[NSNotificationCenter defaultCenter] postNotificationName:kIASKAppSettingChanged
-                                                        object:[toggle key]
-                                                      userInfo:[NSDictionary dictionaryWithObject:[self.settingsStore objectForKey:[toggle key]]
-                                                                                           forKey:[toggle key]]];
+                                                        object:toggle.key
+                                                      userInfo:@{toggle.key: [self.settingsStore objectForKey:toggle.key]}];
 }
 
 - (void)sliderChangedValue:(id)sender {
     IASKSlider *slider = (IASKSlider*)sender;
-    [self.settingsStore setFloat:[slider value] forKey:[slider key]];
+    [self.settingsStore setFloat:slider.value forKey:slider.key];
     [[NSNotificationCenter defaultCenter] postNotificationName:kIASKAppSettingChanged
-                                                        object:[slider key]
-                                                      userInfo:[NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:[slider value]]
-                                                                                           forKey:[slider key]]];
+                                                        object:slider.key
+                                                      userInfo:@{slider.key: @(slider.value)}];
 }
 
 
@@ -329,7 +327,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 	NSString *footerText = [self.settingsReader footerTextForSection:section];
 	if (_showCreditsFooter && (section == [self.settingsReader numberOfSections]-1)) {
 		// show credits since this is the last section
-		if ((footerText == nil) || ([footerText length] == 0)) {
+		if ((footerText == nil) || (footerText.length == 0)) {
 			// show the credits on their own
 			return kIASKCredits;
 		} else {
@@ -337,7 +335,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 			return [NSString stringWithFormat:@"%@\n\n%@", footerText, kIASKCredits];
 		}
 	} else {
-		if ([footerText length] == 0) {
+		if (footerText.length == 0) {
 			return nil;
 		}
 		return [self.settingsReader footerTextForSection:section];
@@ -352,13 +350,13 @@ CGRect IASKCGRectSwap(CGRect rect);
         IASKPSToggleSwitchSpecifierViewCell *cell = (IASKPSToggleSwitchSpecifierViewCell*)[tableView dequeueReusableCellWithIdentifier:[specifier type]];
         
         if (!cell) {
-            cell = (IASKPSToggleSwitchSpecifierViewCell*) [[[NSBundle mainBundle] loadNibNamed:@"IASKPSToggleSwitchSpecifierViewCell" 
+            cell = (IASKPSToggleSwitchSpecifierViewCell*) [[NSBundle mainBundle] loadNibNamed:@"IASKPSToggleSwitchSpecifierViewCell" 
 																					   owner:self 
-																					 options:nil] objectAtIndex:0];
+																					 options:nil][0];
 			if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1)
 				cell.label.font = [UIFont systemFontOfSize:17];
         }
-        [[cell label] setText:[specifier title]];
+        cell.label.text = [specifier title];
 
 		id currentValue = [self.settingsStore objectForKey:key];
 		BOOL toggleState;
@@ -373,10 +371,10 @@ CGRect IASKCGRectSwap(CGRect rect);
 		} else {
 			toggleState = [specifier defaultBoolValue];
 		}
-		[[cell toggle] setOn:toggleState];
+		cell.toggle.on = toggleState;
 		
-        [[cell toggle] addTarget:self action:@selector(toggledValue:) forControlEvents:UIControlEventValueChanged];
-        [[cell toggle] setKey:key];
+        [cell.toggle addTarget:self action:@selector(toggledValue:) forControlEvents:UIControlEventValueChanged];
+        cell.toggle.key = key;
         return cell;
     }
     else if ([[specifier type] isEqualToString:kIASKPSMultiValueSpecifier]) {
@@ -386,9 +384,9 @@ CGRect IASKCGRectSwap(CGRect rect);
             cell = [[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]];
 			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 		}
-        [[cell textLabel] setText:[specifier title]];
-		[[cell detailTextLabel] setText:[[specifier titleForCurrentValue:[self.settingsStore objectForKey:key] != nil ? 
-										 [self.settingsStore objectForKey:key] : [specifier defaultValue]] description]];
+        cell.textLabel.text = [specifier title];
+		cell.detailTextLabel.text = [specifier titleForCurrentValue:[self.settingsStore objectForKey:key] != nil ? 
+										 [self.settingsStore objectForKey:key] : [specifier defaultValue]].description;
         return cell;
     }
     else if ([[specifier type] isEqualToString:kIASKPSTitleValueSpecifier]) {
@@ -418,30 +416,30 @@ CGRect IASKCGRectSwap(CGRect rect);
         IASKPSTextFieldSpecifierViewCell *cell = (IASKPSTextFieldSpecifierViewCell*)[tableView dequeueReusableCellWithIdentifier:[specifier type]];
 
         if (!cell) {
-            cell = (IASKPSTextFieldSpecifierViewCell*) [[[NSBundle mainBundle] loadNibNamed:@"IASKPSTextFieldSpecifierViewCell" 
+            cell = (IASKPSTextFieldSpecifierViewCell*) [[NSBundle mainBundle] loadNibNamed:@"IASKPSTextFieldSpecifierViewCell" 
                                                                                       owner:self 
-                                                                                    options:nil] objectAtIndex:0];
+                                                                                    options:nil][0];
 
             cell.textField.textAlignment = NSTextAlignmentLeft;
             cell.textField.returnKeyType = UIReturnKeyDone;
             cell.accessoryType = UITableViewCellAccessoryNone;
         }
 
-        [[cell label] setText:[specifier title]];      
+        cell.label.text = [specifier title];      
       
         NSString *textValue = [self.settingsStore objectForKey:key] != nil ? [self.settingsStore objectForKey:key] : [specifier defaultStringValue];
         if (![textValue isMemberOfClass:[NSString class]]) {
             textValue = [NSString stringWithFormat:@"%@", textValue];
         }
-        [[cell textField] setText:textValue];
+        cell.textField.text = textValue;
 
-        [[cell textField] setKey:key];
-        [[cell textField] setDelegate:self];
-        [[cell textField] addTarget:self action:@selector(_textChanged:) forControlEvents:UIControlEventEditingChanged];
-        [[cell textField] setSecureTextEntry:[specifier isSecure]];
-        [[cell textField] setKeyboardType:[specifier keyboardType]];
-        [[cell textField] setAutocapitalizationType:[specifier autocapitalizationType]];
-        [[cell textField] setAutocorrectionType:[specifier autoCorrectionType]];
+        cell.textField.key = key;
+        cell.textField.delegate = self;
+        [cell.textField addTarget:self action:@selector(_textChanged:) forControlEvents:UIControlEventEditingChanged];
+        cell.textField.secureTextEntry = [specifier isSecure];
+        cell.textField.keyboardType = [specifier keyboardType];
+        cell.textField.autocapitalizationType = [specifier autocapitalizationType];
+        cell.textField.autocorrectionType = [specifier autoCorrectionType];
         [cell setNeedsLayout];
         return cell;
     }
@@ -449,25 +447,25 @@ CGRect IASKCGRectSwap(CGRect rect);
         IASKPSSliderSpecifierViewCell *cell = (IASKPSSliderSpecifierViewCell*)[tableView dequeueReusableCellWithIdentifier:[specifier type]];
         
         if (!cell) {
-            cell = (IASKPSSliderSpecifierViewCell*) [[[NSBundle mainBundle] loadNibNamed:@"IASKPSSliderSpecifierViewCell" 
+            cell = (IASKPSSliderSpecifierViewCell*) [[NSBundle mainBundle] loadNibNamed:@"IASKPSSliderSpecifierViewCell" 
 																				 owner:self 
-																			   options:nil] objectAtIndex:0];
+																			   options:nil][0];
 		}
         
-        if ([[specifier minimumValueImage] length] > 0) {
-            [[cell minImage] setImage:[UIImage imageWithContentsOfFile:[_settingsReader pathForImageNamed:[specifier minimumValueImage]]]];
+        if ([specifier minimumValueImage].length > 0) {
+            cell.minImage.image = [UIImage imageWithContentsOfFile:[_settingsReader pathForImageNamed:[specifier minimumValueImage]]];
         }
 		
-        if ([[specifier maximumValueImage] length] > 0) {
-            [[cell maxImage] setImage:[UIImage imageWithContentsOfFile:[_settingsReader pathForImageNamed:[specifier maximumValueImage]]]];
+        if ([specifier maximumValueImage].length > 0) {
+            cell.maxImage.image = [UIImage imageWithContentsOfFile:[_settingsReader pathForImageNamed:[specifier maximumValueImage]]];
         }
         
-        [[cell slider] setMinimumValue:[specifier minimumValue]];
-        [[cell slider] setMaximumValue:[specifier maximumValue]];
-        [[cell slider] setValue:[self.settingsStore objectForKey:key] != nil ? 
-		 [[self.settingsStore objectForKey:key] floatValue] : [[specifier defaultValue] floatValue]];
-        [[cell slider] addTarget:self action:@selector(sliderChangedValue:) forControlEvents:UIControlEventValueChanged];
-        [[cell slider] setKey:key];
+        cell.slider.minimumValue = [specifier minimumValue];
+        cell.slider.maximumValue = [specifier maximumValue];
+        cell.slider.value = [self.settingsStore objectForKey:key] != nil ? 
+		 [[self.settingsStore objectForKey:key] floatValue] : [[specifier defaultValue] floatValue];
+        [cell.slider addTarget:self action:@selector(sliderChangedValue:) forControlEvents:UIControlEventValueChanged];
+        cell.slider.key = key;
 		[cell setNeedsLayout];
         return cell;
     }
@@ -476,17 +474,17 @@ CGRect IASKCGRectSwap(CGRect rect);
         
         if (!cell) {
             cell = [[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]];
-			[cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
+			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
 
-        [[cell textLabel] setText:[specifier title]];
+        cell.textLabel.text = [specifier title];
         return cell;
     } else if ([[specifier type] isEqualToString:kIASKOpenURLSpecifier]) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[specifier type]];
         
         if (!cell) {
             cell = [[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]];
-			[cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
+			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
 
 		cell.textLabel.text = [specifier title];
@@ -506,7 +504,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         
         if (!cell) {
             cell = [[IASKPSTitleValueSpecifierViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:[specifier type]];
-			[cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
+			cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
 		cell.textLabel.text = [specifier title];
@@ -521,7 +519,7 @@ CGRect IASKCGRectSwap(CGRect rect);
         if (!cell) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:[specifier type]];
         }
-        [[cell textLabel] setText:[specifier title]];
+        cell.textLabel.text = [specifier title];
         return cell;
     }
 }
@@ -543,27 +541,27 @@ CGRect IASKCGRectSwap(CGRect rect);
         [tableView deselectRowAtIndexPath:indexPath animated:NO];
     }
     else if ([[specifier type] isEqualToString:kIASKPSMultiValueSpecifier]) {
-        IASKSpecifierValuesViewController *targetViewController = [[_viewList objectAtIndex:kIASKSpecifierValuesViewControllerIndex] objectForKey:@"viewController"];
+        IASKSpecifierValuesViewController *targetViewController = _viewList[kIASKSpecifierValuesViewControllerIndex][@"viewController"];
 		
         if (targetViewController == nil) {
             // the view controller has not been created yet, create it and set it to our viewList array
             // create a new dictionary with the new view controller
             NSMutableDictionary *newItemDict = [NSMutableDictionary dictionaryWithCapacity:3];
-            [newItemDict addEntriesFromDictionary: [_viewList objectAtIndex:kIASKSpecifierValuesViewControllerIndex]];	// copy the title and explain strings
+            [newItemDict addEntriesFromDictionary: _viewList[kIASKSpecifierValuesViewControllerIndex]];	// copy the title and explain strings
             
             targetViewController = [[IASKSpecifierValuesViewController alloc] initWithNibName:@"IASKSpecifierValuesView" bundle:nil];
             // add the new view controller to the dictionary and then to the 'viewList' array
-            [newItemDict setObject:targetViewController forKey:@"viewController"];
-            [_viewList replaceObjectAtIndex:kIASKSpecifierValuesViewControllerIndex withObject:newItemDict];
+            newItemDict[@"viewController"] = targetViewController;
+            _viewList[kIASKSpecifierValuesViewControllerIndex] = newItemDict;
             
             // load the view controll back in to push it
-            targetViewController = [[_viewList objectAtIndex:kIASKSpecifierValuesViewControllerIndex] objectForKey:@"viewController"];
+            targetViewController = _viewList[kIASKSpecifierValuesViewControllerIndex][@"viewController"];
         }
         self.currentIndexPath = indexPath;
-        [targetViewController setCurrentSpecifier:specifier];
+        targetViewController.currentSpecifier = specifier;
         targetViewController.settingsReader = self.settingsReader;
         targetViewController.settingsStore = self.settingsStore;
-        [[self navigationController] pushViewController:targetViewController animated:YES];
+        [self.navigationController pushViewController:targetViewController animated:YES];
     }
     else if ([[specifier type] isEqualToString:kIASKPSSliderSpecifier]) {
         [tableView deselectRowAtIndexPath:indexPath animated:NO];
@@ -602,13 +600,13 @@ CGRect IASKCGRectSwap(CGRect rect);
             return;
         }        
         
-        IASKAppSettingsViewController *targetViewController = [[_viewList objectAtIndex:kIASKSpecifierChildViewControllerIndex] objectForKey:@"viewController"];
+        IASKAppSettingsViewController *targetViewController = _viewList[kIASKSpecifierChildViewControllerIndex][@"viewController"];
 		
         if (targetViewController == nil) {
             // the view controller has not been created yet, create it and set it to our viewList array
             // create a new dictionary with the new view controller
             NSMutableDictionary *newItemDict = [NSMutableDictionary dictionaryWithCapacity:3];
-            [newItemDict addEntriesFromDictionary: [_viewList objectAtIndex:kIASKSpecifierChildViewControllerIndex]];	// copy the title and explain strings
+            [newItemDict addEntriesFromDictionary: _viewList[kIASKSpecifierChildViewControllerIndex]];	// copy the title and explain strings
             
             targetViewController = [[[self class] alloc] initWithNibName:@"IASKAppSettingsView" bundle:nil];
 			targetViewController.showDoneButton = NO;
@@ -616,17 +614,17 @@ CGRect IASKCGRectSwap(CGRect rect);
 			targetViewController.delegate = self.delegate;
 
             // add the new view controller to the dictionary and then to the 'viewList' array
-            [newItemDict setObject:targetViewController forKey:@"viewController"];
-            [_viewList replaceObjectAtIndex:kIASKSpecifierChildViewControllerIndex withObject:newItemDict];
+            newItemDict[@"viewController"] = targetViewController;
+            _viewList[kIASKSpecifierChildViewControllerIndex] = newItemDict;
             
             // load the view controll back in to push it
-            targetViewController = [[_viewList objectAtIndex:kIASKSpecifierChildViewControllerIndex] objectForKey:@"viewController"];
+            targetViewController = _viewList[kIASKSpecifierChildViewControllerIndex][@"viewController"];
         }
         self.currentIndexPath = indexPath;
 		targetViewController.file = specifier.file;
 		targetViewController.title = specifier.title;
         targetViewController.showCreditsFooter = NO;
-        [[self navigationController] pushViewController:targetViewController animated:YES];
+        [self.navigationController pushViewController:targetViewController animated:YES];
     } else if ([[specifier type] isEqualToString:kIASKOpenURLSpecifier]) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
 		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:specifier.file]];    
@@ -648,19 +646,19 @@ CGRect IASKCGRectSwap(CGRect rect);
             if ([specifier localizedObjectForKey:kIASKMailComposeSubject]) {
                 [mailViewController setSubject:[specifier localizedObjectForKey:kIASKMailComposeSubject]];
             }
-            if ([[specifier specifierDict] objectForKey:kIASKMailComposeToRecipents]) {
-                [mailViewController setToRecipients:[[specifier specifierDict] objectForKey:kIASKMailComposeToRecipents]];
+            if (specifier.specifierDict[kIASKMailComposeToRecipents]) {
+                [mailViewController setToRecipients:specifier.specifierDict[kIASKMailComposeToRecipents]];
             }
-            if ([[specifier specifierDict] objectForKey:kIASKMailComposeCcRecipents]) {
-                [mailViewController setCcRecipients:[[specifier specifierDict] objectForKey:kIASKMailComposeCcRecipents]];
+            if (specifier.specifierDict[kIASKMailComposeCcRecipents]) {
+                [mailViewController setCcRecipients:specifier.specifierDict[kIASKMailComposeCcRecipents]];
             }
-            if ([[specifier specifierDict] objectForKey:kIASKMailComposeBccRecipents]) {
-                [mailViewController setBccRecipients:[[specifier specifierDict] objectForKey:kIASKMailComposeBccRecipents]];
+            if (specifier.specifierDict[kIASKMailComposeBccRecipents]) {
+                [mailViewController setBccRecipients:specifier.specifierDict[kIASKMailComposeBccRecipents]];
             }
             if ([specifier localizedObjectForKey:kIASKMailComposeBody]) {
                 BOOL isHTML = NO;
-                if ([[specifier specifierDict] objectForKey:kIASKMailComposeBodyIsHTML]) {
-                    isHTML = [[[specifier specifierDict] objectForKey:kIASKMailComposeBodyIsHTML] boolValue];
+                if (specifier.specifierDict[kIASKMailComposeBodyIsHTML]) {
+                    isHTML = [specifier.specifierDict[kIASKMailComposeBodyIsHTML] boolValue];
                 }
                 
                 if ([self.delegate respondsToSelector:@selector(mailComposeBody)]) {
@@ -712,23 +710,22 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)_textChanged:(id)sender {
     IASKTextField *text = (IASKTextField*)sender;
-    [_settingsStore setObject:[text text] forKey:[text key]];
+    [_settingsStore setObject:text.text forKey:text.key];
     [[NSNotificationCenter defaultCenter] postNotificationName:kIASKAppSettingChanged
-                                                        object:[text key]
-                                                      userInfo:[NSDictionary dictionaryWithObject:[text text]
-                                                                                           forKey:[text key]]];
+                                                        object:text.key
+                                                      userInfo:@{text.key: text.text}];
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-	[textField setTextAlignment:NSTextAlignmentLeft];
+	textField.textAlignment = NSTextAlignmentLeft;
 	self.currentFirstResponder = textField;
     return YES;
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
 	self.currentFirstResponder = textField;
-	if ([_tableView indexPathsForVisibleRows].count) {
-		_topmostRowBeforeKeyboardWasShown = (NSIndexPath*)[[_tableView indexPathsForVisibleRows] objectAtIndex:0];
+	if (_tableView.indexPathsForVisibleRows.count) {
+		_topmostRowBeforeKeyboardWasShown = (NSIndexPath*)_tableView.indexPathsForVisibleRows[0];
 	} else {
 		// this should never happen
 		_topmostRowBeforeKeyboardWasShown = [NSIndexPath indexPathForRow:0 inSection:0];
@@ -748,20 +745,20 @@ CGRect IASKCGRectSwap(CGRect rect);
 #pragma mark Keyboard Management
 - (void)_keyboardWillShow:(NSNotification*)notification {
 	if (self.navigationController.topViewController == self) {
-		NSDictionary* userInfo = [notification userInfo];
+		NSDictionary* userInfo = notification.userInfo;
 
 		// we don't use SDK constants here to be universally compatible with all SDKs ≥ 3.0
-		NSValue* keyboardFrameValue = [userInfo objectForKey:@"UIKeyboardBoundsUserInfoKey"];
+		NSValue* keyboardFrameValue = userInfo[@"UIKeyboardBoundsUserInfoKey"];
 		if (!keyboardFrameValue) {
-			keyboardFrameValue = [userInfo objectForKey:@"UIKeyboardFrameEndUserInfoKey"];
+			keyboardFrameValue = userInfo[@"UIKeyboardFrameEndUserInfoKey"];
 		}
 		
 		// Reduce the tableView height by the part of the keyboard that actually covers the tableView
-		CGRect windowRect = [[UIApplication sharedApplication] keyWindow].bounds;
+		CGRect windowRect = [UIApplication sharedApplication].keyWindow.bounds;
 		if (UIInterfaceOrientationLandscapeLeft == self.interfaceOrientation ||UIInterfaceOrientationLandscapeRight == self.interfaceOrientation ) {
 			windowRect = IASKCGRectSwap(windowRect);
 		}
-		CGRect viewRectAbsolute = [_tableView convertRect:_tableView.bounds toView:[[UIApplication sharedApplication] keyWindow]];
+		CGRect viewRectAbsolute = [_tableView convertRect:_tableView.bounds toView:[UIApplication sharedApplication].keyWindow];
 		if (UIInterfaceOrientationLandscapeLeft == self.interfaceOrientation ||UIInterfaceOrientationLandscapeRight == self.interfaceOrientation ) {
 			viewRectAbsolute = IASKCGRectSwap(viewRectAbsolute);
 		}
@@ -769,8 +766,8 @@ CGRect IASKCGRectSwap(CGRect rect);
 		frame.size.height -= [keyboardFrameValue CGRectValue].size.height - CGRectGetMaxY(windowRect) + CGRectGetMaxY(viewRectAbsolute);
 
 		[UIView beginAnimations:nil context:NULL];
-		[UIView setAnimationDuration:[[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
-		[UIView setAnimationCurve:[[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue]];
+		[UIView setAnimationDuration:[userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
+		[UIView setAnimationCurve:[userInfo[UIKeyboardAnimationCurveUserInfoKey] intValue]];
 		_tableView.frame = frame;
 		[UIView commitAnimations];
 		
@@ -792,11 +789,11 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)_keyboardWillHide:(NSNotification*)notification {
 	if (self.navigationController.topViewController == self) {
-		NSDictionary* userInfo = [notification userInfo];
+		NSDictionary* userInfo = notification.userInfo;
 		
 		[UIView beginAnimations:nil context:NULL];
-		[UIView setAnimationDuration:[[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
-		[UIView setAnimationCurve:[[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue]];
+		[UIView setAnimationDuration:[userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
+		[UIView setAnimationCurve:[userInfo[UIKeyboardAnimationCurveUserInfoKey] intValue]];
 		_tableView.frame = self.view.bounds;
 		[UIView commitAnimations];
 		

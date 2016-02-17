@@ -23,6 +23,6 @@
     NSMutableDictionary * _dict;
 }
 
-- (id)initWithPath:(NSString*)path;
+- (instancetype)initWithPath:(NSString*)path;
 
 @end

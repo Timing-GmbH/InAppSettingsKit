@@ -21,14 +21,14 @@
 @synthesize url;
 @synthesize webView;
 
-- (id)initWithFile:(NSString*)urlString key:(NSString*)key {
+- (instancetype)initWithFile:(NSString*)urlString key:(NSString*)key {
 	if (!(self = [super initWithNibName:nil bundle:nil])) {
 		return nil;
 	}
 	
 	self.url = [NSURL URLWithString:urlString];
-	if (!self.url || ![self.url scheme]) {
-		NSString *path = [[NSBundle mainBundle] pathForResource:[urlString stringByDeletingPathExtension] ofType:[urlString pathExtension]];
+	if (!self.url || !(self.url).scheme) {
+		NSString *path = [[NSBundle mainBundle] pathForResource:urlString.stringByDeletingPathExtension ofType:urlString.pathExtension];
 		if(path)
 			self.url = [NSURL fileURLWithPath:path];
 		else
@@ -47,12 +47,12 @@
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-	NSURL *newURL = [request URL];
+	NSURL *newURL = request.URL;
 	
 	// intercept mailto URL and send it to an in-app Mail compose view instead
-	if ([[newURL scheme] isEqualToString:@"mailto"]) {
+	if ([newURL.scheme isEqualToString:@"mailto"]) {
 		
-		NSArray *rawURLparts = [[newURL resourceSpecifier] componentsSeparatedByString:@"?"];
+		NSArray *rawURLparts = [newURL.resourceSpecifier componentsSeparatedByString:@"?"];
 		if (rawURLparts.count > 2) {
 			return NO; // invalid URL
 		}
@@ -61,13 +61,13 @@
 		mailViewController.mailComposeDelegate = self;
 		
 		NSMutableArray *toRecipients = [NSMutableArray array];
-		NSString *defaultRecipient = [rawURLparts objectAtIndex:0];
+		NSString *defaultRecipient = rawURLparts[0];
 		if (defaultRecipient.length) {
 			[toRecipients addObject:defaultRecipient];
 		}
 		
 		if (rawURLparts.count == 2) {
-			NSString *queryString = [rawURLparts objectAtIndex:1];
+			NSString *queryString = rawURLparts[1];
 			
 			NSArray *params = [queryString componentsSeparatedByString:@"&"];
 			for (NSString *param in params) {
@@ -75,8 +75,8 @@
 				if (keyValue.count != 2) {
 					continue;
 				}
-				NSString *key = [[keyValue objectAtIndex:0] lowercaseString];
-				NSString *value = [keyValue objectAtIndex:1];
+				NSString *key = [keyValue[0] lowercaseString];
+				NSString *value = keyValue[1];
 				
 				value =  (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(kCFAllocatorDefault,
 																											   (__bridge CFStringRef)value,
@@ -114,7 +114,7 @@
 	}
 	
 	// open inline if host is the same, otherwise, pass to the system
-	if (![newURL host] || [[newURL host] isEqualToString:[self.url host]]) {
+	if (!newURL.host || [newURL.host isEqualToString:(self.url).host]) {
 		return YES;
 	}
 	[[UIApplication sharedApplication] openURL:newURL];

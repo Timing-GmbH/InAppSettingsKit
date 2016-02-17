@@ -33,23 +33,21 @@ bundlePath=_bundlePath,
 settingsBundle=_settingsBundle, 
 dataSource=_dataSource;
 
-- (id)init {
+- (instancetype)init {
 	return [self initWithFile:@"Root"];
 }
 
-- (id)initWithFile:(NSString*)file {
+- (instancetype)initWithFile:(NSString*)file {
     if ((self=[super init])) {
 
 
         self.path = [self locateSettingsFile: file];
-        [self setSettingsBundle:[NSDictionary dictionaryWithContentsOfFile:self.path]];
-        self.bundlePath = [self.path stringByDeletingLastPathComponent];
-        _bundle = [NSBundle bundleWithPath:[self bundlePath]];
+        self.settingsBundle = [NSDictionary dictionaryWithContentsOfFile:self.path];
+        self.bundlePath = (self.path).stringByDeletingLastPathComponent;
+        _bundle = [NSBundle bundleWithPath:self.bundlePath];
         
 		// Look for localization file
-		self.localizationTable = [[[[self.path stringByDeletingPathExtension] // removes '.plist'
-									stringByDeletingPathExtension] // removes potential '.inApp'
-								   lastPathComponent] // strip absolute path
+		self.localizationTable = [(self.path).stringByDeletingPathExtension.stringByDeletingPathExtension.lastPathComponent // strip absolute path
 								  stringByReplacingOccurrencesOfString:[self platformSuffix] withString:@""]; // removes potential '~device' (~ipad, ~iphone)
 		if([_bundle pathForResource:self.localizationTable ofType:@"strings"] == nil){
 			// Could not find the specified localization: use default
@@ -64,12 +62,12 @@ dataSource=_dataSource;
 }
 
 - (void)_reinterpretBundle:(NSDictionary*)settingsBundle {
-    NSArray *preferenceSpecifiers   = [settingsBundle objectForKey:kIASKPreferenceSpecifiers];
+    NSArray *preferenceSpecifiers   = settingsBundle[kIASKPreferenceSpecifiers];
     NSInteger sectionCount          = -1;
     NSMutableArray *dataSource      = [[NSMutableArray alloc] init];
     
     for (NSDictionary *specifier in preferenceSpecifiers) {
-        if ([(NSString*)[specifier objectForKey:kIASKType] isEqualToString:kIASKPSGroupSpecifier]) {
+        if ([(NSString*)specifier[kIASKType] isEqualToString:kIASKPSGroupSpecifier]) {
             NSMutableArray *newArray = [[NSMutableArray alloc] init];
             
             [newArray addObject:specifier];
@@ -84,29 +82,29 @@ dataSource=_dataSource;
 			}
 
             IASKSpecifier *newSpecifier = [[IASKSpecifier alloc] initWithSpecifier:specifier];
-            [(NSMutableArray*)[dataSource objectAtIndex:sectionCount] addObject:newSpecifier];
+            [(NSMutableArray*)dataSource[sectionCount] addObject:newSpecifier];
         }
     }
-    [self setDataSource:dataSource];
+    self.dataSource = dataSource;
 }
 
 - (BOOL)_sectionHasHeading:(NSInteger)section {
-    return [[[[self dataSource] objectAtIndex:section] objectAtIndex:0] isKindOfClass:[NSDictionary class]];
+    return [self.dataSource[section][0] isKindOfClass:[NSDictionary class]];
 }
 
 - (NSInteger)numberOfSections {
-    return [[self dataSource] count];
+    return self.dataSource.count;
 }
 
 - (NSInteger)numberOfRowsForSection:(NSInteger)section {
     int headingCorrection = [self _sectionHasHeading:section] ? 1 : 0;
-    return [(NSArray*)[[self dataSource] objectAtIndex:section] count] - headingCorrection;
+    return ((NSArray*)self.dataSource[section]).count - headingCorrection;
 }
 
 - (IASKSpecifier*)specifierForIndexPath:(NSIndexPath*)indexPath {
     int headingCorrection = [self _sectionHasHeading:indexPath.section] ? 1 : 0;
     
-    IASKSpecifier *specifier = [[[self dataSource] objectAtIndex:indexPath.section] objectAtIndex:(indexPath.row+headingCorrection)];
+    IASKSpecifier *specifier = self.dataSource[indexPath.section][(indexPath.row+headingCorrection)];
  	specifier.settingsReader = self;
  	return specifier;
 }
@@ -126,23 +124,23 @@ dataSource=_dataSource;
 
 - (NSString*)titleForSection:(NSInteger)section {
     if ([self _sectionHasHeading:section]) {
-        NSDictionary *dict = [[[self dataSource] objectAtIndex:section] objectAtIndex:kIASKSectionHeaderIndex];
-        return [_bundle localizedStringForKey:[dict objectForKey:kIASKTitle] value:[dict objectForKey:kIASKTitle] table:self.localizationTable];
+        NSDictionary *dict = self.dataSource[section][kIASKSectionHeaderIndex];
+        return [_bundle localizedStringForKey:dict[kIASKTitle] value:dict[kIASKTitle] table:self.localizationTable];
     }
     return nil;
 }
 
 - (NSString*)keyForSection:(NSInteger)section {
     if ([self _sectionHasHeading:section]) {
-        return [[[[self dataSource] objectAtIndex:section] objectAtIndex:kIASKSectionHeaderIndex] objectForKey:kIASKKey];
+        return self.dataSource[section][kIASKSectionHeaderIndex][kIASKKey];
     }
     return nil;
 }
 
 - (NSString*)footerTextForSection:(NSInteger)section {
     if ([self _sectionHasHeading:section]) {
-        NSDictionary *dict = [[[self dataSource] objectAtIndex:section] objectAtIndex:kIASKSectionHeaderIndex];
-        return [_bundle localizedStringForKey:[dict objectForKey:kIASKFooterText] value:[dict objectForKey:kIASKFooterText] table:self.localizationTable];
+        NSDictionary *dict = self.dataSource[section][kIASKSectionHeaderIndex];
+        return [_bundle localizedStringForKey:dict[kIASKFooterText] value:dict[kIASKFooterText] table:self.localizationTable];
     }
     return nil;
 }
@@ -152,7 +150,7 @@ dataSource=_dataSource;
 }
 
 - (NSString*)pathForImageNamed:(NSString*)image {
-    return [[self bundlePath] stringByAppendingPathComponent:image];
+    return [self.bundlePath stringByAppendingPathComponent:image];
 }
 
 - (NSString *)platformSuffix {
@@ -168,7 +166,7 @@ dataSource=_dataSource;
             suffix:(NSString *)suffix
          extension:(NSString *)extension {
 
-    NSString *appBundle = [[NSBundle mainBundle] bundlePath];
+    NSString *appBundle = [NSBundle mainBundle].bundlePath;
     bundle = [appBundle stringByAppendingPathComponent:bundle];
     file = [file stringByAppendingFormat:@"%@%@", suffix, extension];
     return [bundle stringByAppendingPathComponent:file];
@@ -199,13 +197,13 @@ dataSource=_dataSource;
     // - This implementation uses the device suffixes on iOS 3.x as well.
 
     NSArray *bundles =
-        [NSArray arrayWithObjects:kIASKBundleFolderAlt, kIASKBundleFolder, nil];
+        @[kIASKBundleFolderAlt, kIASKBundleFolder];
 
     NSArray *extensions =
-        [NSArray arrayWithObjects:@".inApp.plist", @".plist", nil];
+        @[@".inApp.plist", @".plist"];
 
     NSArray *suffixes =
-        [NSArray arrayWithObjects:[self platformSuffix], @"", nil];
+        @[[self platformSuffix], @""];
 
     NSString *path = nil;
     NSFileManager *fileManager = [NSFileManager defaultManager];

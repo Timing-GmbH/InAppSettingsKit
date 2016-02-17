@@ -22,7 +22,7 @@
   NSURL *url;
 }
 
-- (id)initWithFile:(NSString*)htmlFileName key:(NSString*)key;
+- (instancetype)initWithFile:(NSString*)htmlFileName key:(NSString*)key;
 
 @property (nonatomic, strong) IBOutlet UIWebView *webView;
 @property (nonatomic, strong) NSURL *url;
