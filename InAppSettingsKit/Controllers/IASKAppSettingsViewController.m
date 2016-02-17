@@ -97,7 +97,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 #pragma mark standard view controller methods
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if ([super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
         // If set to YES, will display credits for InAppSettingsKit creators
         _showCreditsFooter = YES;
         
@@ -309,7 +309,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 	NSString *key  = [self.settingsReader keyForSection:section];
 	if ([self tableView:tableView viewForHeaderInSection:section] && [self.delegate respondsToSelector:@selector(tableView:heightForHeaderForKey:)]) {
 		CGFloat result;
-		if ((result = [self.delegate tableView:tableView heightForHeaderForKey:key])) {
+		if ((result = [self.delegate tableView:tableView heightForHeaderForKey:key]) != 0) {
 			return result;
 		}
 		
@@ -319,7 +319,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 		CGSize size = [title ec_sizeWithFont:[UIFont boldSystemFontOfSize:[UIFont labelFontSize]]
 						   constrainedToSize:CGSizeMake(tableView.frame.size.width - 2*kIASKHorizontalPaddingGroupTitles, INFINITY)
 							   lineBreakMode:NSLineBreakByWordWrapping];
-		return ceilf(size.height)+kIASKVerticalPaddingGroupTitles;
+		return ceil(size.height)+kIASKVerticalPaddingGroupTitles;
 	}
 	return 0;
 }
