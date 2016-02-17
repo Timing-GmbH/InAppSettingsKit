@@ -198,8 +198,8 @@ CGRect IASKCGRectSwap(CGRect rect);
 	[super viewDidDisappear:animated];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+	return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? UIInterfaceOrientationMaskAll : UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 - (void)didReceiveMemoryWarning {
