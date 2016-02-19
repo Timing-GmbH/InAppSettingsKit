@@ -755,11 +755,11 @@ CGRect IASKCGRectSwap(CGRect rect);
 		
 		// Reduce the tableView height by the part of the keyboard that actually covers the tableView
 		CGRect windowRect = [UIApplication sharedApplication].keyWindow.bounds;
-		if (UIInterfaceOrientationLandscapeLeft == self.interfaceOrientation ||UIInterfaceOrientationLandscapeRight == self.interfaceOrientation ) {
+		if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
 			windowRect = IASKCGRectSwap(windowRect);
 		}
 		CGRect viewRectAbsolute = [_tableView convertRect:_tableView.bounds toView:[UIApplication sharedApplication].keyWindow];
-		if (UIInterfaceOrientationLandscapeLeft == self.interfaceOrientation ||UIInterfaceOrientationLandscapeRight == self.interfaceOrientation ) {
+		if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
 			viewRectAbsolute = IASKCGRectSwap(viewRectAbsolute);
 		}
 		CGRect frame = _tableView.frame;
