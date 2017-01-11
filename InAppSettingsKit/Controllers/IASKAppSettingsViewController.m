@@ -108,6 +108,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 }
 
 - (void)awakeFromNib {
+	[super awakeFromNib];
 	// If set to YES, will display credits for InAppSettingsKit creators
 	_showCreditsFooter = YES;
 	
