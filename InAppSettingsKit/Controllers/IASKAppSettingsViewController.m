@@ -627,7 +627,8 @@ CGRect IASKCGRectSwap(CGRect rect);
         [self.navigationController pushViewController:targetViewController animated:YES];
     } else if ([[specifier type] isEqualToString:kIASKOpenURLSpecifier]) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:specifier.file]];    
+		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:specifier.file]
+										   options:@{} completionHandler:nil];    
     } else if ([[specifier type] isEqualToString:kIASKButtonSpecifier]) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
 		Class buttonClass = [specifier buttonClass];
